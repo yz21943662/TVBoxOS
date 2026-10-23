@@ -18,6 +18,8 @@ jobs:
     name: assembleRelease (java / java32 / java64)
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    env:
+      TZ: Asia/Shanghai
     steps:
       - name: Checkout
         uses: actions/checkout@v4
