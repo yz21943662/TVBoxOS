@@ -62,6 +62,8 @@ jobs:
           TAG="$(date +%Y%m%d-%H%M)-${GITHUB_SHA::7}"
           echo "TAG=$TAG" >> "$GITHUB_ENV"
           cp -f .github/workflows/TVBoxOSC.jks app/tvbox.jks
+          echo "sdk.dir=${ANDROID_SDK_ROOT:-$ANDROID_HOME}" > local.properties
+          cat local.properties
           python3 .github/ci/patch_build.py "$TAG"
           grep -n "signingConfig\|versionName" app/build.gradle
 
