@@ -31,13 +31,21 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Install SDK packages
         run: |
-          yes | sdkmanager --licenses > /dev/null 2>&1 || true
-          sdkmanager "platforms;android-33" "build-tools;30.0.3" "build-tools;33.0.0" > /dev/null
+          SDKROOT="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          echo "SDK root: $SDKROOT"
+          SDKM="$(command -v sdkmanager || true)"
+          if [ -z "$SDKM" ]; then
+            for d in "$SDKROOT"/cmdline-tools/*/bin/sdkmanager; do
+              if [ -x "$d" ]; then SDKM="$d"; break; fi
+            done
+          fi
+          echo "sdkmanager: $SDKM"
+          test -x "$SDKM"
+          yes | "$SDKM" --licenses > /dev/null 2>&1 || true
+          "$SDKM" "platforms;android-33" "build-tools;30.0.3" "build-tools;33.0.0" > /dev/null
+          "$SDKM" --list_installed | head -15
 
       # AGP 7.2.2 / Gradle 7.5 用 JDK 11 构建
       - name: Set up JDK 11 (build)
