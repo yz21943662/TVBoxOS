@@ -24,7 +24,23 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Set up JDK 11
+      # sdkmanager 需要 JDK 17+，先用 17 装 SDK 组件
+      - name: Set up JDK 17 (SDK tools)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install SDK packages
+        run: |
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager "platforms;android-33" "build-tools;30.0.3" "build-tools;33.0.0" > /dev/null
+
+      # AGP 7.2.2 / Gradle 7.5 用 JDK 11 构建
+      - name: Set up JDK 11 (build)
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -32,12 +48,6 @@ jobs:
 
       - name: Set up Gradle cache
         uses: gradle/actions/setup-gradle@v4
-
-      - name: Ensure Android SDK components
-        run: |
-          SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
-          yes | "$SDKM" --licenses > /dev/null 2>&1 || true
-          "$SDKM" "platforms;android-33" "build-tools;30.0.3" "build-tools;33.0.0" > /dev/null
 
       - name: Patch build files (signing / version)
         run: |
