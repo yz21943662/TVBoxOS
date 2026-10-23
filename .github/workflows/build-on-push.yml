@@ -88,6 +88,14 @@ jobs:
           for f in *.apk; do mv "$f" "${f%.apk}-$TAG.apk"; done
           ls -lh
 
+      - name: Verify APK signature
+        run: |
+          BT="${ANDROID_SDK_ROOT:-$ANDROID_HOME}/build-tools/33.0.0"
+          for f in out/*.apk; do
+            echo "=== $f"
+            "$BT/apksigner" verify --print-certs "$f" | head -6
+          done
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
