@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/vs_30">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AI 荐片"
+            android:textColor="#02F8E1"
+            android:textSize="@dimen/ts_32" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/tvRefresh"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/vs_40"
+            android:background="@drawable/button_dialog_main"
+            android:focusable="true"
+            android:gravity="center"
+            android:paddingLeft="@dimen/vs_20"
+            android:paddingRight="@dimen/vs_20"
+            android:text="刷新分析"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/ts_20" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/vs_15"
+        android:layout_marginBottom="@dimen/vs_15"
+        android:background="#33FFFFFF" />
+
+    <LinearLayout
+        android:id="@+id/llLoading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/vs_40">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AI 正在分析中..."
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/ts_24" />
+
+        <TextView
+            android:id="@+id/tvLoadingHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/vs_10"
+            android:text="正在获取数据并调用 AI 模型"
+            android:textColor="#99FFFFFF"
+            android:textSize="@dimen/ts_18" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/scrollResult"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="@dimen/vs_8"
+            android:padding="@dimen/vs_15"
+            android:textColor="#CCFFFFFF"
+            android:textSize="@dimen/ts_22" />
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/tvError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/vs_50"
+        android:gravity="center"
+        android:textColor="#FF6666"
+        android:textSize="@dimen/ts_22"
+        android:visibility="gone" />
+</LinearLayout>

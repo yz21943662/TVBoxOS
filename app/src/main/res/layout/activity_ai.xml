@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/vs_40">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="AI 智能助手"
+        android:textColor="#02F8E1"
+        android:textSize="@dimen/ts_40" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/vs_20"
+        android:layout_marginBottom="@dimen/vs_60"
+        android:gravity="center"
+        android:text="基于大模型，为你提供智能影视服务"
+        android:textColor="#99FFFFFF"
+        android:textSize="@dimen/ts_22" />
+
+    <LinearLayout
+        android:id="@+id/llRecommend"
+        android:layout_width="@dimen/vs_500"
+        android:layout_height="@dimen/vs_100"
+        android:layout_marginBottom="@dimen/vs_25"
+        android:background="@drawable/shape_setting_model_focus"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/vs_20">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AI 荐片"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/ts_30" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/vs_5"
+            android:text="分析首页影片，推荐值得观看的电影"
+            android:textColor="#99FFFFFF"
+            android:textSize="@dimen/ts_18" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llTracking"
+        android:layout_width="@dimen/vs_500"
+        android:layout_height="@dimen/vs_100"
+        android:layout_marginBottom="@dimen/vs_25"
+        android:background="@drawable/shape_setting_model_focus"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/vs_20">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AI 追剧"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/ts_30" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/vs_5"
+            android:text="查看追剧进度，发现更新提醒"
+            android:textColor="#99FFFFFF"
+            android:textSize="@dimen/ts_18" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llAnalysis"
+        android:layout_width="@dimen/vs_500"
+        android:layout_height="@dimen/vs_100"
+        android:layout_marginBottom="@dimen/vs_25"
+        android:background="@drawable/shape_setting_model_focus"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/vs_20">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AI 分析"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/ts_30" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/vs_5"
+            android:text="分析观影记录，推荐相似影片"
+            android:textColor="#99FFFFFF"
+            android:textSize="@dimen/ts_18" />
+    </LinearLayout>
+</LinearLayout>

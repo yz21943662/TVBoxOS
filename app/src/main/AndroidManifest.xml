@@ -74,6 +74,27 @@
         <activity
             android:name=".ui.activity.LocalFileActivity"
             android:screenOrientation="sensorLandscape" />
+        <activity
+            android:name=".ui.activity.DownloadActivity"
+            android:screenOrientation="sensorLandscape" />
+        <activity
+            android:name=".ui.activity.DownloadDetailActivity"
+            android:screenOrientation="sensorLandscape" />
+        <activity
+            android:name=".ui.activity.DownloadManagerActivity"
+            android:screenOrientation="sensorLandscape" />
+        <activity
+            android:name=".ui.activity.AiActivity"
+            android:screenOrientation="sensorLandscape" />
+        <activity
+            android:name=".ui.activity.AiRecommendActivity"
+            android:screenOrientation="sensorLandscape" />
+        <activity
+            android:name=".ui.activity.AiTrackingActivity"
+            android:screenOrientation="sensorLandscape" />
+        <activity
+            android:name=".ui.activity.AiAnalysisActivity"
+            android:screenOrientation="sensorLandscape" />
 
         <service
             android:name=".dlna.DLNACastService"
