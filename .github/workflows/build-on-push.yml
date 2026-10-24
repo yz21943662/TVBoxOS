@@ -1,16 +1,17 @@
-name: Build APK (push to main)
+name: Build APK (push to main / yinzhou_test)
 
 on:
   push:
     branches:
       - main
+      - yinzhou_test
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: build-main
+  group: build-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -61,8 +62,17 @@ jobs:
 
       - name: Patch build files (signing / version)
         run: |
+          BRANCH="${GITHUB_REF_NAME}"
           TAG="$(date +%Y%m%d-%H%M)-${GITHUB_SHA::7}"
+          if [ "$BRANCH" = "main" ]; then
+            REL_TAG="latest-build"
+          else
+            REL_TAG="latest-build-${BRANCH//\//-}"
+            TAG="${TAG}-${BRANCH//\//-}"
+          fi
           echo "TAG=$TAG" >> "$GITHUB_ENV"
+          echo "REL_TAG=$REL_TAG" >> "$GITHUB_ENV"
+          echo "branch=$BRANCH tag=$TAG release=$REL_TAG"
           cp -f .github/workflows/TVBoxOSC.jks app/tvbox.jks
           echo "sdk.dir=${ANDROID_SDK_ROOT:-$ANDROID_HOME}" > local.properties
           cat local.properties
@@ -107,10 +117,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if gh release view latest-build > /dev/null 2>&1; then
-            gh release view latest-build --json assets --jq '.assets[].name' | while read -r n; do
+          if gh release view "$REL_TAG" > /dev/null 2>&1; then
+            gh release view "$REL_TAG" --json assets --jq '.assets[].name' | while read -r n; do
               echo "delete $n"
-              gh release delete-asset latest-build "$n" --yes || true
+              gh release delete-asset "$REL_TAG" "$n" --yes || true
             done
           fi
 
@@ -118,11 +128,12 @@ jobs:
         if: github.event_name == 'push'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: latest-build
-          name: 最新构建 ${{ env.TAG }}
+          tag_name: ${{ env.REL_TAG }}
+          name: 最新构建 ${{ env.TAG }}（${{ github.ref_name }}）
           prerelease: true
           body: |
-            自动构建自 `${{ github.sha }}`
+            分支：`${{ github.ref_name }}`
+            构建自 `${{ github.sha }}`
             提交：${{ github.event.head_commit.message }}
           files: out/*.apk
           fail_on_unmatched_files: true
