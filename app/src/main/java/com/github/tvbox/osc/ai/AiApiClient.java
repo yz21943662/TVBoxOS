@@ -40,7 +40,7 @@ public class AiApiClient {
     private AiApiClient() {
         client = new OkHttpClient.Builder()
                 .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
                 .build();
     }
@@ -72,6 +72,8 @@ public class AiApiClient {
                 body.add("messages", messages);
                 body.addProperty("temperature", 0.7);
                 body.addProperty("max_tokens", 2000);
+                // 关闭思考模式：荐片/追剧/分析属于轻量任务，思考模式会使响应耗时增加 5 倍以上，易触发超时
+                body.addProperty("enable_thinking", false);
 
                 Request request = new Request.Builder()
                         .url(BASE_URL + "/chat/completions")
@@ -94,8 +96,14 @@ public class AiApiClient {
                 if (choices != null && choices.size() > 0) {
                     JsonObject choice = choices.get(0).getAsJsonObject();
                     JsonObject msg = choice.getAsJsonObject("message");
-                    String content = msg.get("content").getAsString();
-                    notifySuccess(callback, content);
+                    // 思考模型可能只返回 reasoning_content 而 content 为 null/空，需判空避免异常
+                    String content = msg.has("content") && !msg.get("content").isJsonNull()
+                            ? msg.get("content").getAsString() : "";
+                    if (content.trim().isEmpty()) {
+                        notifyError(callback, "AI 返回结果为空，请稍后重试");
+                    } else {
+                        notifySuccess(callback, content);
+                    }
                 } else {
                     notifyError(callback, "AI 返回结果为空");
                 }

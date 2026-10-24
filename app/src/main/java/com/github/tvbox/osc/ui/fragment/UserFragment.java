@@ -28,7 +28,6 @@ import com.github.tvbox.osc.ui.activity.DownloadActivity;
 import com.github.tvbox.osc.ui.activity.FastSearchActivity;
 import com.github.tvbox.osc.ui.activity.HistoryActivity;
 import com.github.tvbox.osc.ui.activity.LivePlayActivity;
-import com.github.tvbox.osc.ui.activity.PushActivity;
 import com.github.tvbox.osc.ui.activity.SearchActivity;
 import com.github.tvbox.osc.ui.activity.SettingActivity;
 import com.github.tvbox.osc.ui.adapter.HomeHotVodAdapter;
@@ -69,7 +68,6 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
     private LinearLayout tvSetting;
     private LinearLayout tvHistory;
     private LinearLayout tvCollect;
-    private LinearLayout tvPush;
     private LinearLayout tvDownload;
     private LinearLayout tvAi;
     public static HomeHotVodAdapter homeHotVodAdapter;
@@ -166,14 +164,12 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
         tvSetting = findViewById(R.id.tvSetting);
         tvCollect = findViewById(R.id.tvFavorite);
         tvHistory = findViewById(R.id.tvHistory);
-        tvPush = findViewById(R.id.tvPush);
         tvDownload = findViewById(R.id.tvDownload);
         tvAi = findViewById(R.id.tvAi);
         tvLive.setOnClickListener(this);
         tvSearch.setOnClickListener(this);
         tvSetting.setOnClickListener(this);
         tvHistory.setOnClickListener(this);
-        tvPush.setOnClickListener(this);
         tvCollect.setOnClickListener(this);
         tvDownload.setOnClickListener(this);
         tvAi.setOnClickListener(this);
@@ -181,7 +177,6 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
         tvSearch.setOnFocusChangeListener(focusChangeListener);
         tvSetting.setOnFocusChangeListener(focusChangeListener);
         tvHistory.setOnFocusChangeListener(focusChangeListener);
-        tvPush.setOnFocusChangeListener(focusChangeListener);
         tvCollect.setOnFocusChangeListener(focusChangeListener);
         tvDownload.setOnFocusChangeListener(focusChangeListener);
         tvAi.setOnFocusChangeListener(focusChangeListener);
@@ -390,8 +385,6 @@ public class UserFragment extends BaseLazyFragment implements View.OnClickListen
             jumpActivity(SettingActivity.class);
         } else if (v.getId() == R.id.tvHistory) {
             jumpActivity(HistoryActivity.class);
-        } else if (v.getId() == R.id.tvPush) {
-            jumpActivity(PushActivity.class);
         } else if (v.getId() == R.id.tvFavorite) {
             jumpActivity(CollectActivity.class);
         } else if (v.getId() == R.id.tvDownload) {
