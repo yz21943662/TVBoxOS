@@ -120,6 +120,7 @@ public class DetailActivity extends BaseActivity {
     private TextView tvQuickSearch;
     private TextView tvChangeSource;
     private TextView tvCollect;
+    private TextView tvDownload;
     private TvRecyclerView mGridViewFlag;
     private TvRecyclerView mGridViewQuality;
     private TvRecyclerView mGridView;
@@ -200,6 +201,7 @@ public class DetailActivity extends BaseActivity {
         tvDesc = findViewById(R.id.tvDesc);
         tvSeriesSort = findViewById(R.id.mSeriesSortTv);
         tvCollect = findViewById(R.id.tvCollect);
+        tvDownload = findViewById(R.id.tvDownload);
         tvQuickSearch = findViewById(R.id.tvQuickSearch);
         tvChangeSource = findViewById(R.id.tvChangeSource);
         mEmptyPlayList = findViewById(R.id.mEmptyPlaylist);
@@ -367,6 +369,22 @@ public class DetailActivity extends BaseActivity {
                     Toast.makeText(DetailActivity.this, "已移除收藏夹", Toast.LENGTH_SHORT).show();
                     tvCollect.setText("加入收藏");
                 }
+            }
+        });
+        tvDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FastClickCheckUtil.check(v);
+                if (TextUtils.isEmpty(vodId) || TextUtils.isEmpty(sourceKey)) {
+                    Toast.makeText(DetailActivity.this, "暂无可下载的剧集信息", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Bundle bundle = new Bundle();
+                bundle.putString("id", vodId);
+                bundle.putString("sourceKey", sourceKey);
+                bundle.putString("title", vod_name);
+                bundle.putString("picture", vod_picture);
+                jumpActivity(DownloadDetailActivity.class, bundle);
             }
         });
         tvPlayUrl.setOnClickListener(new View.OnClickListener() {

@@ -43,6 +43,7 @@ import com.github.tvbox.osc.util.FastClickCheckUtil;
 import com.github.tvbox.osc.util.HawkConfig;
 import com.github.tvbox.osc.util.HistoryHelper;
 import com.github.tvbox.osc.util.SearchHelper;
+import com.github.tvbox.osc.util.SearchResultFilter;
 import com.github.tvbox.osc.viewmodel.SourceViewModel;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -880,6 +881,9 @@ public class SearchActivity extends BaseActivity {
             List<Movie.Video> exactData = new ArrayList<>();
             List<Movie.Video> highData = new ArrayList<>();
             for (Movie.Video video : absXml.movie.videoList) {
+                if (!SearchResultFilter.isPlayable(video)) {
+                    continue;
+                }
                 if (isHighMatchSearchResult(video)) {
                     highMatchVods.add(video);
                     highData.add(video);

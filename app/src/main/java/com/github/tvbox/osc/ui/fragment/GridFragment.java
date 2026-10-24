@@ -2,6 +2,7 @@ package com.github.tvbox.osc.ui.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,11 +33,9 @@ import com.github.tvbox.osc.ui.adapter.GridFilterKVAdapter;
 import com.github.tvbox.osc.ui.dialog.GridFilterDialog;
 import com.github.tvbox.osc.ui.tv.widget.LoadMoreView;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
-import com.github.tvbox.osc.util.HawkConfig;
 import com.github.tvbox.osc.util.ImgUtil;
 import com.github.tvbox.osc.util.LOG;
 import com.github.tvbox.osc.viewmodel.SourceViewModel;
-import com.orhanobut.hawk.Hawk;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
 import com.owen.tvrecyclerview.widget.V7GridLayoutManager;
 import com.owen.tvrecyclerview.widget.V7LinearLayoutManager;
@@ -259,25 +258,20 @@ public class GridFragment extends BaseLazyFragment {
                     bundle.putString("id", video.id);
                     bundle.putString("sourceKey", video.sourceKey);
                     bundle.putString("title", video.name);
-                    if( video.tag !=null && (video.tag.equals("folder") || video.tag.equals("cover"))){
+                    // 首页电影墙点击：直接按片名跨源搜索，避免进入空白详情页
+                    if (video.tag != null && video.tag.equals("folder")) {
+                        // 文件夹条目照旧进入下级列表
                         focusedView = view;
-                        if(("12".indexOf(getUITag()) != -1)){
-                            changeView(video.id,video.tag.equals("folder"));
-                        }else {
-                            changeView(video.id,false);
-                        }
-                    }
-                    else{
-                        if (video.id != null && video.id.startsWith("msearch:")) {
-                            if (Hawk.get(HawkConfig.FAST_SEARCH_MODE, true) && enableFastSearch()) {
-                                jumpActivity(FastSearchActivity.class, bundle);
-                            } else {
-                                jumpActivity(SearchActivity.class, bundle);
-                            }
+                        if (("12".indexOf(getUITag()) != -1)) {
+                            changeView(video.id, true);
                         } else {
-                            bundle.putString("picture", video.pic);
-                            jumpActivity(DetailActivity.class, bundle);
+                            changeView(video.id, false);
                         }
+                    } else if (!TextUtils.isEmpty(video.name)) {
+                        jumpActivity(SearchActivity.class, bundle);
+                    } else {
+                        bundle.putString("picture", video.pic);
+                        jumpActivity(DetailActivity.class, bundle);
                     }
 
                 }

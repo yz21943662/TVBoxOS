@@ -89,6 +89,7 @@ public class DownloadDetailActivity extends BaseActivity {
         hideViewById(R.id.tvQuickSearch);
         hideViewById(R.id.tvDesc);
         hideViewById(R.id.tvChangeSource);
+        hideViewById(R.id.tvDownload);
 
         // 修改"立即播放"为"下载所选剧集"
         tvPlay.setText("下载所选剧集");

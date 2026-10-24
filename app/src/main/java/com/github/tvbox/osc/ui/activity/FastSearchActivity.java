@@ -34,6 +34,7 @@ import com.github.tvbox.osc.ui.adapter.SearchWordAdapter;
 import com.github.tvbox.osc.util.FastClickCheckUtil;
 import com.github.tvbox.osc.util.HistoryHelper;
 import com.github.tvbox.osc.util.SearchHelper;
+import com.github.tvbox.osc.util.SearchResultFilter;
 import com.github.tvbox.osc.viewmodel.SourceViewModel;
 import com.lzy.okgo.OkGo;
 import com.owen.tvrecyclerview.widget.TvRecyclerView;
@@ -739,6 +740,7 @@ public class FastSearchActivity extends BaseActivity {
 
         if (absXml != null && absXml.movie != null && absXml.movie.videoList != null && absXml.movie.videoList.size() > 0) {
             for (Movie.Video video : absXml.movie.videoList) {
+                if (!SearchResultFilter.isPlayable(video)) continue;
                 if (!matchSearchResult(video.name, searchTitle)) continue;
                 detailFallbackSearchResults.add(video);
                 if (!resultVods.containsKey(video.sourceKey)) {
