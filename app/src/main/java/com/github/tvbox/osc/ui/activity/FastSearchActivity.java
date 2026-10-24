@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -539,6 +540,7 @@ public class FastSearchActivity extends BaseActivity {
 
     private void search(String title) {
         cancel();
+        cancelEmptyDelay();
         showLoading();
         this.searchTitle = title;
         fenci();
@@ -578,6 +580,8 @@ public class FastSearchActivity extends BaseActivity {
     private final AtomicInteger timedOutSearchCount = new AtomicInteger(0);
     private String currentSearchToken = "";
     private boolean searchPaused = false;
+    private final Handler emptyDelayHandler = new Handler(Looper.getMainLooper());
+    private Runnable emptyDelayRunnable;
     private final List<Movie.Video> detailFallbackSearchResults = new ArrayList<>();
     private boolean folderFilterMode;
     private final List<List<Movie.Video>> folderHistory = new ArrayList<>();
@@ -689,12 +693,17 @@ public class FastSearchActivity extends BaseActivity {
     private boolean matchSearchResult(String name, String searchTitle) {
         if (TextUtils.isEmpty(name) || TextUtils.isEmpty(searchTitle)) return false;
         searchTitle = searchTitle.trim();
+        // 严格匹配：所有词语都包含在内
         String[] arr = searchTitle.split("\\s+");
         int matchNum = 0;
         for(String one : arr) {
             if (name.contains(one)) matchNum++;
         }
-        return matchNum == arr.length;
+        if (matchNum == arr.length) return true;
+        // 宽松匹配：去掉空格和特殊字符后做包含检查（应对"流浪地球2" vs "流浪地球 2"这类情况）
+        String normalizedName = name.replaceAll("[\\s\\-—・·]+", "").replaceAll("[（(].*?[)）]", "");
+        String normalizedTitle = searchTitle.replaceAll("[\\s\\-—・·]+", "");
+        return normalizedName.contains(normalizedTitle) || normalizedTitle.contains(normalizedName);
     }
 
     private boolean isExactSearchResult(Movie.Video video) {
@@ -1025,13 +1034,31 @@ public class FastSearchActivity extends BaseActivity {
         if (allRunCount.get() > 0) return;
         searchPaused = false;
         updateSearchStatus();
+        // 如果还有结果没加载完，延迟等待3秒再决定是否显示空结果
         if (searchAdapter.getData().size() == 0 && resultVods.isEmpty()) {
-            showEmpty();
+            if (emptyDelayRunnable != null) {
+                emptyDelayHandler.removeCallbacks(emptyDelayRunnable);
+            }
+            emptyDelayRunnable = () -> {
+                if (searchAdapter.getData().size() == 0 && resultVods.isEmpty()) {
+                    showEmpty();
+                }
+            };
+            emptyDelayHandler.postDelayed(emptyDelayRunnable, 3000);
+        } else {
+            cancelEmptyDelay();
         }
         cancel();
         if (searchTimeoutExecutor != null) {
             searchTimeoutExecutor.shutdownNow();
             searchTimeoutExecutor = null;
+        }
+    }
+
+    private void cancelEmptyDelay() {
+        if (emptyDelayRunnable != null) {
+            emptyDelayHandler.removeCallbacks(emptyDelayRunnable);
+            emptyDelayRunnable = null;
         }
     }
 

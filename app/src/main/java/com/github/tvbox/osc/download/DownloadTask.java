@@ -14,6 +14,7 @@ public class DownloadTask implements Serializable {
     public static final int STATUS_DOWNLOADING = 1;
     public static final int STATUS_COMPLETED = 2;
     public static final int STATUS_FAILED = 3;
+    public static final int STATUS_PAUSED = 4;
 
     public int status = STATUS_PENDING;
     public long totalSize = 0;
@@ -38,6 +39,7 @@ public class DownloadTask implements Serializable {
             case STATUS_DOWNLOADING: return "下载中";
             case STATUS_COMPLETED: return "已完成";
             case STATUS_FAILED: return "失败";
+            case STATUS_PAUSED: return "已暂停";
             default: return "未知";
         }
     }

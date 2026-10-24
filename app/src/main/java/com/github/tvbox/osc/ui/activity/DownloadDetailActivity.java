@@ -54,6 +54,7 @@ public class DownloadDetailActivity extends BaseActivity {
     private String vid;
     private String title;
     private String picture;
+    private TextView tvSelectAll;
 
     @Override
     protected int getLayoutResID() {
@@ -97,9 +98,34 @@ public class DownloadDetailActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 FastClickCheckUtil.check(v);
-                downloadCurrentEpisode();
+                downloadSelectedEpisodes();
             }
         });
+
+        // 全选按钮
+        tvSelectAll = findViewById(R.id.tvSelectAll);
+        if (tvSelectAll != null) {
+            tvSelectAll.setVisibility(View.VISIBLE);
+            tvSelectAll.setText("全选");
+            tvSelectAll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FastClickCheckUtil.check(v);
+                    if (vodInfo != null && vodInfo.seriesMap.containsKey(vodInfo.playFlag)) {
+                        java.util.List<VodInfo.VodSeries> series = vodInfo.seriesMap.get(vodInfo.playFlag);
+                        boolean allSelected = true;
+                        for (VodInfo.VodSeries s : series) {
+                            if (!s.selected) { allSelected = false; break; }
+                        }
+                        for (VodInfo.VodSeries s : series) {
+                            s.selected = !allSelected;
+                        }
+                        seriesAdapter.notifyDataSetChanged();
+                        updateSelectAllText();
+                    }
+                }
+            });
+        }
 
         // 剧集旗标
         mGridViewFlag.setHasFixedSize(true);
@@ -133,14 +159,32 @@ public class DownloadDetailActivity extends BaseActivity {
                 if (vodInfo != null && vodInfo.seriesMap.containsKey(vodInfo.playFlag)) {
                     java.util.List<VodInfo.VodSeries> series = vodInfo.seriesMap.get(vodInfo.playFlag);
                     if (position < series.size()) {
-                        for (int i = 0; i < series.size(); i++) {
-                            seriesAdapter.getData().get(i).selected = false;
-                        }
-                        series.get(position).selected = true;
+                        // 切换选中状态（多选）
+                        series.get(position).selected = !series.get(position).selected;
                         seriesAdapter.notifyDataSetChanged();
                         vodInfo.playIndex = position;
+                        updateSelectAllText();
                     }
                 }
+            }
+        });
+        seriesAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
+                FastClickCheckUtil.check(view);
+                if (vodInfo != null && vodInfo.seriesMap.containsKey(vodInfo.playFlag)) {
+                    java.util.List<VodInfo.VodSeries> series = vodInfo.seriesMap.get(vodInfo.playFlag);
+                    boolean allSelected = true;
+                    for (VodInfo.VodSeries s : series) {
+                        if (!s.selected) { allSelected = false; break; }
+                    }
+                    for (VodInfo.VodSeries s : series) {
+                        s.selected = !allSelected;
+                    }
+                    seriesAdapter.notifyDataSetChanged();
+                    updateSelectAllText();
+                }
+                return true;
             }
         });
 
@@ -208,32 +252,47 @@ public class DownloadDetailActivity extends BaseActivity {
         }
     }
 
-    private void downloadCurrentEpisode() {
+    private void updateSelectAllText() {
+        if (tvSelectAll == null) return;
+        if (vodInfo != null && vodInfo.seriesMap.containsKey(vodInfo.playFlag)) {
+            java.util.List<VodInfo.VodSeries> series = vodInfo.seriesMap.get(vodInfo.playFlag);
+            boolean allSelected = true;
+            for (VodInfo.VodSeries s : series) {
+                if (!s.selected) { allSelected = false; break; }
+            }
+            tvSelectAll.setText(allSelected ? "取消全选" : "全选");
+        }
+    }
+
+    private void downloadSelectedEpisodes() {
         if (vodInfo == null || !vodInfo.seriesMap.containsKey(vodInfo.playFlag)) {
             Toast.makeText(this, "请选择剧集", Toast.LENGTH_SHORT).show();
             return;
         }
         java.util.List<VodInfo.VodSeries> series = vodInfo.seriesMap.get(vodInfo.playFlag);
-        if (vodInfo.playIndex < 0 || vodInfo.playIndex >= series.size()) {
-            Toast.makeText(this, "请选择剧集", Toast.LENGTH_SHORT).show();
-            return;
+        int count = 0;
+        for (VodInfo.VodSeries vodSeries : series) {
+            if (!vodSeries.selected) continue;
+            if (TextUtils.isEmpty(vodSeries.url)) {
+                Toast.makeText(this, "剧集 " + vodSeries.name + " 播放地址为空，已跳过", Toast.LENGTH_SHORT).show();
+                continue;
+            }
+            DownloadTask task = new DownloadTask(
+                    vodInfo.id,
+                    vodInfo.name,
+                    vodSeries.url,
+                    sourceKey,
+                    vodInfo.pic,
+                    vodSeries.name
+            );
+            DownloadManager.get().addTask(task);
+            count++;
         }
-        VodInfo.VodSeries vodSeries = series.get(vodInfo.playIndex);
-        if (TextUtils.isEmpty(vodSeries.url)) {
-            Toast.makeText(this, "播放地址为空", Toast.LENGTH_SHORT).show();
-            return;
+        if (count == 0) {
+            Toast.makeText(this, "请先选择要下载的剧集（单击切换选择，长按全选/取消全选）", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "已添加 " + count + " 个剧集到下载队列", Toast.LENGTH_SHORT).show();
         }
-
-        DownloadTask task = new DownloadTask(
-                vodInfo.id,
-                vodInfo.name,
-                vodSeries.url,
-                sourceKey,
-                vodInfo.pic,
-                vodSeries.name
-        );
-        DownloadManager.get().addTask(task);
-        Toast.makeText(this, "已添加到下载队列: " + vodSeries.name, Toast.LENGTH_SHORT).show();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

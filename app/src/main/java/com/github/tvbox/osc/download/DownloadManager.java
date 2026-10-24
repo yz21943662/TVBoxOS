@@ -29,6 +29,7 @@ public class DownloadManager {
     private final OkHttpClient client;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private final List<DownloadListener> listeners = new ArrayList<>();
+    private final java.util.Map<String, java.util.concurrent.Future<?>> activeFutures = new java.util.concurrent.ConcurrentHashMap<>();
 
     public interface DownloadListener {
         void onTaskChanged(DownloadTask task);
@@ -101,6 +102,52 @@ public class DownloadManager {
         synchronized (taskList) {
             taskList.remove(task);
         }
+        // 删除已下载文件
+        String path = getDownloadPath(task);
+        if (path != null) {
+            try { new File(path).delete(); } catch (Exception ignored) {}
+        }
+    }
+
+    public void retryTask(DownloadTask task) {
+        if (task.status == DownloadTask.STATUS_FAILED || task.status == DownloadTask.STATUS_PAUSED) {
+            task.downloadedSize = 0;
+            task.progress = 0;
+            // 删除不完整的文件
+            String path = getDownloadPath(task);
+            if (path != null) {
+                try {
+                    File f = new File(path);
+                    if (f.exists() && f.length() < task.totalSize) f.delete();
+                } catch (Exception ignored) {}
+            }
+            startDownload(task);
+        }
+    }
+
+    public void pauseTask(DownloadTask task) {
+        if (task.status == DownloadTask.STATUS_DOWNLOADING || task.status == DownloadTask.STATUS_PENDING) {
+            task.status = DownloadTask.STATUS_PAUSED;
+            // 取消正在执行的任务
+            java.util.concurrent.Future<?> future = activeFutures.remove(task.url);
+            if (future != null) {
+                future.cancel(true);
+            }
+            notifyTaskChanged(task);
+        }
+    }
+
+    public void resumeTask(DownloadTask task) {
+        if (task.status == DownloadTask.STATUS_PAUSED) {
+            startDownload(task);
+        }
+    }
+
+    public String getDownloadDir() {
+        String cachePath = FileUtils.getCachePath();
+        File dir = new File(cachePath, "downloads");
+        if (!dir.exists()) dir.mkdirs();
+        return dir.getAbsolutePath();
     }
 
     public void removeCompleted() {
@@ -116,10 +163,14 @@ public class DownloadManager {
     }
 
     private void startDownload(DownloadTask task) {
+        // 先取消旧任务
+        java.util.concurrent.Future<?> oldFuture = activeFutures.remove(task.url);
+        if (oldFuture != null) oldFuture.cancel(true);
+
         task.status = DownloadTask.STATUS_DOWNLOADING;
         notifyTaskChanged(task);
 
-        executor.execute(() -> {
+        java.util.concurrent.Future<?> future = executor.submit(() -> {
             try {
                 String cachePath = FileUtils.getCachePath();
                 File downloadDir = new File(cachePath, "downloads");
@@ -188,10 +239,16 @@ public class DownloadManager {
 
             } catch (Exception e) {
                 Log.e(TAG, "Download failed: " + task.url, e);
-                task.status = DownloadTask.STATUS_FAILED;
-                notifyTaskChanged(task);
+                // 被暂停的不算失败
+                if (task.status != DownloadTask.STATUS_PAUSED) {
+                    task.status = DownloadTask.STATUS_FAILED;
+                    notifyTaskChanged(task);
+                }
+            } finally {
+                activeFutures.remove(task.url);
             }
         });
+        activeFutures.put(task.url, future);
     }
 
     public String getDownloadPath(DownloadTask task) {

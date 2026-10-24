@@ -73,17 +73,20 @@
     <ScrollView
         android:id="@+id/scrollResult"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
         android:visibility="gone">
 
         <TextView
             android:id="@+id/tvResult"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:lineSpacingExtra="@dimen/vs_8"
+            android:lineSpacingExtra="@dimen/vs_6"
             android:padding="@dimen/vs_15"
+            android:scrollbars="vertical"
             android:textColor="#CCFFFFFF"
-            android:textSize="@dimen/ts_22" />
+            android:textSize="@dimen/ts_18" />
     </ScrollView>
 
     <TextView
