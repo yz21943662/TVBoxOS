@@ -11,13 +11,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:id="@+id/tvUserHome"
+        <HorizontalScrollView
+            android:id="@+id/tvUserHomeScroll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:orientation="horizontal">
+            android:overScrollMode="never"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/tvUserHome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:orientation="horizontal">
 
             <LinearLayout
                 android:id="@+id/tvHistory"
@@ -297,13 +308,15 @@
             </LinearLayout>
 
         </LinearLayout>
+
+        </HorizontalScrollView>
         <com.owen.tvrecyclerview.widget.TvRecyclerView
             android:id="@+id/tvHotList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipChildren="true"
             android:clipToPadding="false"
-            android:layout_below="@+id/tvUserHome"
+            android:layout_below="@+id/tvUserHomeScroll"
             app:tv_horizontalSpacingWithMargins="@dimen/vs_10"
             app:tv_selectedItemIsCentered="true"
             app:tv_verticalSpacingWithMargins="@dimen/vs_10"
