@@ -2,6 +2,7 @@ package com.github.tvbox.osc.ui.activity;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -98,7 +99,7 @@ public class DownloadManagerActivity extends BaseActivity implements DownloadMan
         }
 
         @Override
-        public ViewHolder onCreateViewHolder(RecyclerView.ViewGroup parent, int viewType) {
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = View.inflate(parent.getContext(), R.layout.item_download_task, null);
             return new ViewHolder(view);
         }
