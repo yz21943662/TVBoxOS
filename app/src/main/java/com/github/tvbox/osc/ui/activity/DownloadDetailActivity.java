@@ -74,7 +74,7 @@ public class DownloadDetailActivity extends BaseActivity {
         }
 
         tvName = findViewById(R.id.tvName);
-        tvThumb = findViewById(R.id.tvThumb);
+        tvThumb = findViewById(R.id.ivThumb);
         tvPlay = findViewById(R.id.tvPlay);
         mGridView = findViewById(R.id.mGridView);
         mGridViewFlag = findViewById(R.id.mGridViewFlag);
@@ -110,7 +110,7 @@ public class DownloadDetailActivity extends BaseActivity {
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 FastClickCheckUtil.check(view);
                 if (vodInfo != null && vodInfo.seriesFlags != null && position < vodInfo.seriesFlags.size()) {
-                    String newFlag = vodInfo.seriesFlags.get(position);
+                    String newFlag = vodInfo.seriesFlags.get(position).name;
                     if (vodInfo.seriesMap.containsKey(newFlag)) {
                         vodInfo.playFlag = newFlag;
                         refreshSeriesList();
@@ -121,8 +121,9 @@ public class DownloadDetailActivity extends BaseActivity {
 
         // 剧集列表
         mGridView.setHasFixedSize(true);
-        mGridView.setLayoutManager(new V7GridLayoutManager(this, 6));
-        seriesAdapter = new SeriesAdapter();
+        V7GridLayoutManager seriesLayoutManager = new V7GridLayoutManager(this, 6);
+        mGridView.setLayoutManager(seriesLayoutManager);
+        seriesAdapter = new SeriesAdapter(seriesLayoutManager);
         mGridView.setAdapter(seriesAdapter);
         seriesAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
@@ -164,8 +165,13 @@ public class DownloadDetailActivity extends BaseActivity {
         sourceViewModel.detailResult.observe(this, new Observer<AbsXml>() {
             @Override
             public void onChanged(AbsXml absXml) {
-                if (absXml != null && absXml.video != null && absXml.video.sourceKey != null && absXml.video.sourceKey.equals(sourceKey)) {
-                    vodInfo = absXml.video;
+                if (absXml != null && absXml.movie != null && absXml.movie.videoList != null && !absXml.movie.videoList.isEmpty()
+                        && absXml.sourceKey != null && absXml.sourceKey.equals(sourceKey)) {
+                    Movie.Video mVideo = absXml.movie.videoList.get(0);
+                    mVideo.id = vid;
+                    vodInfo = new VodInfo();
+                    vodInfo.setVideo(mVideo);
+                    vodInfo.sourceKey = mVideo.sourceKey;
                     if (vodInfo.seriesMap == null || vodInfo.seriesMap.isEmpty()) {
                         // 没有剧集列表，直接下载当前影片
                         Toast.makeText(DownloadDetailActivity.this, "没有剧集列表，无法选择下载", Toast.LENGTH_SHORT).show();
@@ -185,7 +191,7 @@ public class DownloadDetailActivity extends BaseActivity {
         if (vodInfo.seriesFlags != null && !vodInfo.seriesFlags.isEmpty()) {
             seriesFlagAdapter.setNewData(new ArrayList<>(vodInfo.seriesFlags));
             if (vodInfo.playFlag == null || !vodInfo.seriesMap.containsKey(vodInfo.playFlag)) {
-                vodInfo.playFlag = vodInfo.seriesFlags.get(0);
+                vodInfo.playFlag = vodInfo.seriesFlags.get(0).name;
             }
         }
     }

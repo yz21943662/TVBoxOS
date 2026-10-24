@@ -106,7 +106,7 @@ public class AiRecommendActivity extends BaseActivity {
         });
     }
 
-    private void showLoading() {
+    protected void showLoading() {
         llLoading.setVisibility(View.VISIBLE);
         scrollResult.setVisibility(View.GONE);
     }

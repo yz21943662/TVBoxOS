@@ -77,7 +77,7 @@ public class AiApiClient {
                         .url(BASE_URL + "/chat/completions")
                         .header("Authorization", "Bearer " + API_KEY)
                         .header("Content-Type", "application/json")
-                        .post(RequestBody.create(body.toString(), JSON))
+                        .post(RequestBody.create(JSON, body.toString()))
                         .build();
 
                 Response response = client.newCall(request).execute();

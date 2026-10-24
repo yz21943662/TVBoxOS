@@ -200,8 +200,8 @@ public class DownloadActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSearchResult(RefreshEvent event) {
-        if (event.type == RefreshEvent.TYPE_SEARCH_RESULT && event.data instanceof AbsXml) {
-            AbsXml data = (AbsXml) event.data;
+        if (event.type == RefreshEvent.TYPE_SEARCH_RESULT && event.obj instanceof AbsXml) {
+            AbsXml data = (AbsXml) event.obj;
             if (data.movie != null && data.movie.videoList != null) {
                 synchronized (allSearchResults) {
                     for (Movie.Video v : data.movie.videoList) {
