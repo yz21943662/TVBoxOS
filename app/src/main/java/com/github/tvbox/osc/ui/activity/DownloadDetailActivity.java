@@ -141,6 +141,7 @@ public class DownloadDetailActivity extends BaseActivity {
                     if (vodInfo.seriesMap.containsKey(newFlag)) {
                         vodInfo.playFlag = newFlag;
                         refreshSeriesList();
+                        updateSelectAllText();
                     }
                 }
             }

@@ -139,6 +139,13 @@ public class DownloadManager {
 
     public void resumeTask(DownloadTask task) {
         if (task.status == DownloadTask.STATUS_PAUSED) {
+            // 部分下载的文件不完整，删掉从头下载
+            String path = getDownloadPath(task);
+            if (path != null) {
+                try { new File(path).delete(); } catch (Exception ignored) {}
+            }
+            task.downloadedSize = 0;
+            task.progress = 0;
             startDownload(task);
         }
     }
